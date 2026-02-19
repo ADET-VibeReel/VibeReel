@@ -1,0 +1,105 @@
+/* ================================================================
+   MOVIE ROW (horizontal carousel)  — Yorumi-style
+   ================================================================ */
+/* ── movie-row layout (flex column via rows-container gap) ── */
+
+.row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.9rem;
+}
+
+.row-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--c-text);
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.row-icon {
+    font-size: 1.1rem;
+}
+
+.row-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.row-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--c-border2);
+    background: var(--c-surface2);
+    color: var(--c-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.row-arrow:hover {
+    background: var(--c-surface3);
+    color: var(--c-text);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.row-see-all {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--c-accent-lt);
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+.row-see-all:hover {
+    text-decoration: underline;
+}
+
+/* ── Scrollable track ── */
+.row-track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    /* space for scrollbar or shadow */
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* firefox */
+    margin: 0 -1.5rem;
+    /* extend to edge */
+    padding: 0 1.5rem 1rem;
+    /* padding inside to offset negative margin */
+}
+
+.row-track::-webkit-scrollbar {
+    display: none;
+}
+
+.row-card-wrap {
+    flex: 0 0 auto;
+    width: 140px;
+    /* mobile default */
+}
+
+@media (min-width: 600px) {
+    .row-card-wrap {
+        width: 160px;
+    }
+}
+
+@media (min-width: 900px) {
+    .row-card-wrap {
+        width: 180px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .row-card-wrap {
+        width: 200px;
+    }
+}
