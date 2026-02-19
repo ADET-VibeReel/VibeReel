@@ -195,6 +195,21 @@ img {
   flex-shrink: 0;
 }
 
+.topbar__logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  /* subtle drop shadow so it pops on the dark topbar */
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.35));
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.topbar__logo:hover .topbar__logo-img {
+  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.65));
+  transform: scale(1.04);
+}
+
 .topbar__logo-vibe {
   background: linear-gradient(135deg, #a855f7, #ec4899);
   -webkit-background-clip: text;
@@ -1086,15 +1101,17 @@ img {
 .watch-player-section {
   background: #000;
   width: 100%;
+  /* Fill the viewport minus the sticky header (58px) */
+  height: calc(100vh - 58px);
+  position: relative;
 }
 
 .watch-player-wrap {
   position: relative;
-  padding-bottom: 56.25%;
-  /* 16:9 */
-  height: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  max-height: 85vh;
+  background: #000;
 }
 
 .watch-player-shimmer {
@@ -1105,6 +1122,89 @@ img {
   align-items: center;
   justify-content: center;
   border-radius: 0;
+  background: var(--c-surface);
+}
+
+/* Error overlay */
+.watch-player-error {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  background: var(--c-bg);
+}
+
+/* Slow-load banner */
+.watch-slow-warning {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(147, 51, 234, 0.08);
+  border: 1px solid rgba(147, 51, 234, 0.25);
+  border-radius: var(--r-md);
+  font-size: 0.8rem;
+  color: var(--c-text2);
+  text-align: center;
+}
+
+/* Switch source button */
+.watch-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--c-accent), #7c3aed);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-pill);
+  padding: 9px 22px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 16px var(--c-accent-glow);
+}
+
+.watch-switch-btn:hover {
+  opacity: 0.88;
+  transform: scale(1.03);
+}
+
+/* Provider pill bar */
+.watch-provider-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.watch-provider-pill {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border2);
+  border-radius: var(--r-pill);
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.watch-provider-pill:hover {
+  color: var(--c-text);
+  background: var(--c-surface2);
+}
+
+.watch-provider-pill.active {
+  background: linear-gradient(135deg, var(--c-accent), #7c3aed);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 3px 12px var(--c-accent-glow);
 }
 
 .watch-iframe {

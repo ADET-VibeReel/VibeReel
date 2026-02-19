@@ -24,9 +24,8 @@ const Header = ({ subtitle }) => {
             <div className="topbar__inner">
 
                 {/* ── Logo ── */}
-                <button className="topbar__logo" onClick={() => navigate('/')}>
-                    <span className="topbar__logo-vibe">Vibe</span>
-                    <span className="topbar__logo-reel">Reel</span>
+                <button className="topbar__logo" onClick={() => navigate('/')} aria-label="VibeReel Home">
+                    <img src="/vibereel.png" alt="VibeReel" className="topbar__logo-img" />
                 </button>
 
                 {/* ── Nav links (desktop) ── */}

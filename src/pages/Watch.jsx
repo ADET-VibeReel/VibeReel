@@ -1,13 +1,12 @@
 /**
  * Watch.jsx  ─ Watch Page "/watch/:id"
  * ═══════════════════════════════════════════════════════════════
- * Streams the selected movie via Videasy iframe.
- * UI: full-width player with info panel below — inspired by
- * Mercy's clean watch layout.
+ * Streams the selected movie via Videasy iframe (default).
+ * Falls back to alternate providers if Videasy is unavailable.
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import Header from '../components/Header';
@@ -16,16 +15,50 @@ import MovieRow from '../components/MovieRow';
 import { MOOD_MOVIES } from '../data/moodData';
 
 const TMDB_API_KEY = '05a3f3071ad3fa222ab689fb62ed0df1';
-const VIDEASY_BASE = 'https://player.videasy.net/movie';
 const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 const TMDB_BD_BASE = 'https://image.tmdb.org/t/p/original';
+
+/* ── Stream providers — Videasy first, fallbacks below ── */
+const PROVIDERS = [
+    { key: 'videasy', label: 'Videasy', url: (id) => `https://player.videasy.net/movie/${id}` },
+    { key: 'vidsrc', label: 'VidSrc', url: (id) => `https://vidsrc.to/embed/movie/${id}` },
+    { key: '2embed', label: '2Embed', url: (id) => `https://www.2embed.cc/embed/${id}` },
+];
 
 const Watch = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    /* ── useState: iframe load state ── */
+    /* ── Provider switcher ── */
+    const [providerIdx, setProviderIdx] = useState(0);
+    const provider = PROVIDERS[providerIdx];
+    const embedUrl = provider.url(id);
+
+    /* ── iframe load state ── */
     const [playerReady, setPlayerReady] = useState(false);
+    const [playerError, setPlayerError] = useState(false);
+    const [showSlowWarning, setShowSlowWarning] = useState(false);
+    const slowTimer = useRef(null);
+
+    /* Reset state + start 10-sec slow-load timer whenever provider/id changes */
+    useEffect(() => {
+        setPlayerReady(false);
+        setPlayerError(false);
+        setShowSlowWarning(false);
+        clearTimeout(slowTimer.current);
+        slowTimer.current = setTimeout(() => setShowSlowWarning(true), 10000);
+        return () => clearTimeout(slowTimer.current);
+    }, [id, providerIdx]);
+
+    const handleLoad = () => {
+        setPlayerReady(true);
+        setShowSlowWarning(false);
+        clearTimeout(slowTimer.current);
+    };
+
+    const switchProvider = () => {
+        setProviderIdx(i => (i + 1) % PROVIDERS.length);
+    };
 
     /* ── useState: info panel visibility toggle ── */
     const [showInfo, setShowInfo] = useState(true);
@@ -54,7 +87,6 @@ const Watch = () => {
         fetchAll();
     }, [id]);
 
-    const videasyUrl = `${VIDEASY_BASE}/${id}`;
     const backdropUrl = movieMeta?.backdrop_path
         ? `${TMDB_BD_BASE}${movieMeta.backdrop_path}` : null;
 
@@ -69,22 +101,49 @@ const Watch = () => {
                 <section className="watch-player-section" aria-label="Movie Player">
                     <div className="watch-player-wrap">
                         {/* Loading shimmer */}
-                        {!playerReady && (
+                        {!playerReady && !playerError && (
                             <div className="watch-player-shimmer skeleton">
                                 <div className="loading-center">
                                     <div className="spinner" />
-                                    <p style={{ color: 'var(--vr-muted)', fontSize: '0.85rem', marginTop: 8 }}>
-                                        Connecting to stream…
+                                    <p style={{ color: 'var(--c-muted)', fontSize: '0.85rem', marginTop: 8 }}>
+                                        Connecting via <strong style={{ color: 'var(--c-text)' }}>{provider.label}</strong>…
                                     </p>
+                                    {/* Slow-load warning after 10 s */}
+                                    {showSlowWarning && (
+                                        <div className="watch-slow-warning">
+                                            <p>Taking too long? Try a different source.</p>
+                                            <button className="watch-switch-btn" onClick={switchProvider}>
+                                                Switch to {PROVIDERS[(providerIdx + 1) % PROVIDERS.length].label} ↗
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
+
+                        {/* Error fallback */}
+                        {playerError && (
+                            <div className="watch-player-error">
+                                <span style={{ fontSize: '2.5rem' }}>⚠️</span>
+                                <p style={{ color: 'var(--c-text)', fontWeight: 700 }}>Stream failed to load</p>
+                                <p style={{ color: 'var(--c-muted)', fontSize: '0.82rem', textAlign: 'center', maxWidth: 320 }}>
+                                    {provider.label} couldn't serve this title right now.
+                                </p>
+                                <button className="watch-switch-btn" onClick={switchProvider}>
+                                    Try {PROVIDERS[(providerIdx + 1) % PROVIDERS.length].label} instead ↗
+                                </button>
+                            </div>
+                        )}
+
                         <iframe
-                            src={videasyUrl}
+                            key={embedUrl}
+                            src={embedUrl}
                             title={movieMeta ? `Watch ${movieMeta.title}` : 'Movie Player'}
-                            allowFullScreen
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            onLoad={() => setPlayerReady(true)}
+                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; web-share"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            scrolling="no"
+                            onLoad={handleLoad}
+                            onError={() => { setPlayerError(true); setPlayerReady(true); }}
                             className={`watch-iframe ${playerReady ? 'watch-iframe--ready' : ''}`}
                         />
                     </div>
@@ -95,7 +154,7 @@ const Watch = () => {
         ══════════════════════════════════════════════ */}
                 <div className="watch-below">
 
-                    {/* ── Action row ── */}
+                    {/* ── Provider pills + action row ── */}
                     <div className="watch-action-row">
                         <button className="watch-back-btn" onClick={() => navigate('/')}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -103,8 +162,22 @@ const Watch = () => {
                                 <polyline points="19 12 5 12" />
                                 <polyline points="12 5 5 12 12 19" />
                             </svg>
-                            Back to Dashboard
+                            Back
                         </button>
+
+                        {/* Source pills */}
+                        <div className="watch-provider-pills">
+                            {PROVIDERS.map((p, i) => (
+                                <button
+                                    key={p.key}
+                                    className={`watch-provider-pill ${i === providerIdx ? 'active' : ''}`}
+                                    onClick={() => setProviderIdx(i)}
+                                    title={`Stream via ${p.label}`}
+                                >
+                                    {p.label}
+                                </button>
+                            ))}
+                        </div>
 
                         <button
                             className={`watch-info-btn ${showInfo ? 'active' : ''}`}
