@@ -1,0 +1,110 @@
+/* ================================================================
+   MOVIE CARD (Poster)
+   ================================================================ */
+.mc {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), z-index 0s;
+    /* z-index needed for hover pop */
+}
+
+.mc--hovered {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.mc__poster-wrap {
+    position: relative;
+    border-radius: var(--r-md);
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    background: var(--c-surface2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.mc__poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Hover overlay with play button */
+.mc__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.mc--hovered .mc__overlay {
+    opacity: 1;
+}
+
+.mc__play {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(147, 51, 234, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transform: scale(0.85);
+    transition: transform 0.2s;
+}
+
+.mc--hovered .mc__play {
+    transform: scale(1);
+}
+
+/* Rating badge (top right) */
+.mc__rating {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Match badge (top left) */
+.mc__match {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: #10b981;
+    /* matcha green */
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 6px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.mc__info {
+    margin-top: 0.6rem;
+}
+
+.mc__title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--c-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.mc__year {
+    font-size: 0.8rem;
+    color: var(--c-muted);
+}
