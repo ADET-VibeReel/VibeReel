@@ -14,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import HeroBanner from '../components/HeroBanner';
 import MovieRow from '../components/MovieRow';
-import StatusCard from '../components/StatusCard';
 import Footer from "../components/Footer"
 
 // ── Data sources ──────────────────────────────────────────────

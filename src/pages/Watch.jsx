@@ -11,6 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import Header from '../components/Header';
 import MovieRow from '../components/MovieRow';
+import MovieLogo from '../components/MovieLogo';
 import Footer from '../components/Footer';
 import { MOOD_MOVIES } from '../data/moodData';
 
